@@ -15,7 +15,9 @@ export default function HistoryPage() {
           </Link>
         }
       />
-      <p className="text-muted">History list and CSV export arrive in Phase 3.</p>
+      <p className="text-muted">
+        History list and CSV export arrive in Phase 3.
+      </p>
     </div>
   );
 }

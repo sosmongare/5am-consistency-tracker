@@ -5,33 +5,63 @@ import { signIn } from "next-auth/react";
 
 type SignInFormProps = {
   googleEnabled: boolean;
+  showDevMagicLink: boolean;
 };
 
-export function SignInForm({ googleEnabled }: SignInFormProps) {
+export function SignInForm({
+  googleEnabled,
+  showDevMagicLink,
+}: SignInFormProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">(
     "idle",
   );
   const [message, setMessage] = useState<string | null>(null);
+  const [magicUrl, setMagicUrl] = useState<string | null>(null);
 
   async function onEmailSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
     setMessage(null);
+    setMagicUrl(null);
     try {
-      const result = await signIn("nodemailer", {
+      const result = await signIn("email", {
         email,
         redirect: false,
         callbackUrl: "/today",
       });
       if (result?.error) {
         setStatus("error");
-        setMessage("Could not send the sign-in link. Try again.");
+        setMessage(
+          "Could not send the sign-in link. Check that Postgres is running and try again.",
+        );
         return;
       }
+
+      let resolvedUrl: string | null = null;
+      if (showDevMagicLink) {
+        // Auth may finish writing the link a moment after the response.
+        for (let attempt = 0; attempt < 8; attempt += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          const response = await fetch(
+            `/api/dev/magic-link?email=${encodeURIComponent(email)}`,
+          );
+          if (response.ok) {
+            const data = (await response.json()) as { url: string | null };
+            if (data.url) {
+              resolvedUrl = data.url;
+              break;
+            }
+          }
+        }
+      }
+
+      setMagicUrl(resolvedUrl);
       setStatus("sent");
       setMessage(
-        "Check Mailpit at http://localhost:8025 for your sign-in link.",
+        resolvedUrl
+          ? "Dev mode: open the link below to sign in."
+          : "Sign-in link requested. If nothing appears below, check the server terminal or try again.",
       );
     } catch {
       setStatus("error");
@@ -89,6 +119,15 @@ export function SignInForm({ googleEnabled }: SignInFormProps) {
         >
           {message}
         </p>
+      ) : null}
+
+      {magicUrl ? (
+        <a
+          href={magicUrl}
+          className="block break-all rounded-input border border-accent/40 bg-surface px-4 py-3 text-sm font-semibold text-accent hover:underline"
+        >
+          Open magic link
+        </a>
       ) : null}
     </div>
   );

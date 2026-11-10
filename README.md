@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 5AM Consistency Tracker
 
-## Getting Started
+Responsive web app that helps one person build a 5 AM wake-up habit and track daily wins, streaks, and weekly reviews.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- PostgreSQL + Prisma
+- Auth.js (email magic link + optional Google)
+- Zod, date-fns-tz, Vitest
+
+Docker Compose will return in a later phase for packaging. For now, run Postgres on the host.
+
+## Prerequisites
+
+- Node.js 22+
+- PostgreSQL 16+ running locally
+
+## Environment
+
+Copy `.env.example` to `.env`:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string |
+| `AUTH_SECRET` | Auth.js secret (long random string) |
+| `AUTH_URL` | App URL, e.g. `http://localhost:3000` |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Optional Google OAuth |
+| `EMAIL_SERVER_*` / `EMAIL_FROM` | Optional SMTP. If unset, magic-link URLs print to the server console in development |
+
+## Local development
 
 ```bash
+npm install
+npx prisma migrate deploy
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- App: http://localhost:3000
+- Without SMTP, request a sign-in link and copy the URL from the terminal running `npm run dev`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Next.js dev server |
+| `npm test` | Vitest (scoring) |
+| `npm run lint` | ESLint |
+| `npm run db:migrate` | Prisma migrate (dev) |
+| `npm run db:seed` | Seed demo user + defaults |
+| `npm run db:studio` | Prisma Studio |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Phase status
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Phase 1: schema, auth, theme, shell, scoring tests
+- Phase 2 (current): Sign in, Today, Week + persistence
+- Phase 3+: Stats, History, Settings, PWA/push, polish/CI, Docker packaging
