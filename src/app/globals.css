@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0e1424;
+  --foreground: #f1f5fb;
+  --surface: #172036;
+  --border: #2b3856;
+  --muted: #a8b3c7;
+  --accent: #ff9f5a;
+  --accent-foreground: #1a1205;
+  --done: #4ade80;
+  --minimum: #7db4ff;
+  --missed: #8b3a4a;
+  --warning: #2a1620;
+  --warning-border: #8b3a4a;
+  --warning-foreground: #ffc2cb;
+  --chart-muted: #3b5486;
+  --radius-card: 20px;
+  --radius-win: 16px;
+  --radius-input: 12px;
+  --radius-pill: 9999px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-done: var(--done);
+  --color-minimum: var(--minimum);
+  --color-missed: var(--missed);
+  --color-warning: var(--warning);
+  --color-warning-border: var(--warning-border);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-chart-muted: var(--chart-muted);
+  --font-sans: var(--font-inter);
+  --radius-card: var(--radius-card);
+  --radius-win: var(--radius-win);
+  --radius-input: var(--radius-input);
+  --radius-pill: var(--radius-pill);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+@utility rounded-card {
+  border-radius: var(--radius-card);
+}
+
+@utility rounded-win {
+  border-radius: var(--radius-win);
+}
+
+@utility rounded-input {
+  border-radius: var(--radius-input);
+}
+
+@utility rounded-pill {
+  border-radius: var(--radius-pill);
+}
